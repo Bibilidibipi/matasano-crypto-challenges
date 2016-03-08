@@ -27,7 +27,8 @@ ENGLISH_FREQUENCIES = {
   'x' => 0.150,
   'y' => 1.974,
   'z' => 0.074,
-  ' ' => 22
+  ' ' => 22,
+  "\n" => 10,
 }
 
 def score_english(str)

@@ -1,7 +1,5 @@
 require_relative "./03_single_byte_xor_cipher"
 
-NUM_SIZES = 2
-
 def normalized_hamming_distance(s1, s2)
   raise "must compare strings of equal length" if s1.length != s2.length
   d = 0
@@ -12,45 +10,40 @@ def normalized_hamming_distance(s1, s2)
   d.fdiv(s1.length)
 end
 
-# returns an array of 4 likely keysizes
-def keysizes(code)
-  (2..40).to_a.map do |s|
-    chunks = code.scan(/.{#{s}}/)
-    chunks.pop if chunks.length % 2 != 0
-    if chunks.empty?
-      [s, 9]
-    else
-      [
-        s, 
-        chunks.each_slice(2).to_a.inject(0) do |dis, a|
-          dis + normalized_hamming_distance(a[0], a[1])
-        end * (2.fdiv(chunks.length))
-      ]
-    end
-  end.sort_by do |el| 
-    el[1]
-  end[0...NUM_SIZES].map do |el|
-    el[0]
+def get_chunks(str, length, partials)
+  chunks = []
+  i = 0
+  until i >= str.length
+    chunks << str[i...(i + length)] unless !partials && i >= str.length - length
+    i += length
   end
+
+  chunks
 end
 
+# takes ascii
 def keysize(code)
-  (2..20).to_a.map do |s|
-    chunks = code.scan(/.{#{s}}/)
+  size = 0
+  dis = 9
+
+  # [size, average normalized hamming distance]
+  (2..40).each do |s|
+    chunks = get_chunks(code, s, false)
     chunks.pop if chunks.length % 2 != 0
-    if chunks.length < 4
-      [s, 9]
-    else
-      [
-        s, 
-        chunks.each_slice(2).to_a.inject(0) do |dis, a|
-          dis + normalized_hamming_distance(a[0], a[1])
-        end * (2.fdiv(chunks.length))
-      ]
+    break if chunks.empty?
+    d = chunks.each_slice(2).to_a.inject(0) do |total_d, a|
+      total_d + normalized_hamming_distance(a[0], a[1])
+    end * (2.fdiv(chunks.length))
+
+    if d < dis - 1 || 
+     (d < dis && s % size != 0) || 
+     (d < dis && size == 2)
+      dis = d
+      size = s
     end
-  end.sort_by do |el| 
-    el[1]
-  end[0][0]
+  end
+
+  size
 end
 
 def strings_transpose(arr)
@@ -62,75 +55,15 @@ def strings_transpose(arr)
   end
 end
 
-def get_keys(code)
-  keysizes(code).map do |size|
-    chunks = strings_transpose(code.scan(/.{1,#{size}}/))
-    chunks.map! do |chunk|
-      decode_single_byte_xor(binary_to_hex(chunk))[1]
-    end
-    chunks.map { |a| a.chr }.join
-  end
-end
-
-# so slow
-def get_combos(arr)
-  return arr.first.map{ |a| [a] } if arr.length == 1
-
-  combos = []
-  get_combos(arr[1..-1]).each do |a|
-    arr[0].each do |el|
-      combos << [el] + a
-    end
-  end
-
-  combos
-end
-
-def rkx_combos(code)
-  keysizes(code).map do |size|
-    chunks = strings_transpose(code.scan(/.{1,#{size}}/))
-    chunks.map! do |chunk|
-      get_single_decodings(binary_to_hex(chunk))
-    end
-
-    get_combos(chunks).map do |combo|
-      message = string_transpose(combo).join
-      [message, score_english_combos(message)]
-    end.sort_by { |el| el[1] }.last
-  end.sort_by { |el| el[1] }.last[0]
-end
-
-def repeating_key_xor_decode(code)
-  # size, message, score
-  keysizes(code).map do |size|
-    chunks = strings_transpose(code.scan(/.{1,#{size}}/))
-    chunks.map! do |chunk|
-      decode_single_byte_xor(binary_to_hex(chunk))[0]
-    end
-    message = strings_transpose(chunks).join
-    [size, message, score_english(message)]
-  end.sort_by { |el| el[2] }.last
-end
-
+# takes ascii
 def rkx_decode(code)
-  # size, message, score
-  size = keysize(code)
-  chunks = strings_transpose(code.scan(/.{1,#{size}}/))
+  chunks = strings_transpose(get_chunks(code, keysize(code), true))
   chunks.map! do |chunk|
-    decode_single_byte_xor(binary_to_hex(chunk))
+    hex_decode_xor_ascii_full(ascii_to_hex(chunk))
   end
-  key = chunks.map { |c| c[1].chr }.join
-  chunks = chunks.map { |c| c[0] }
-  message = strings_transpose(chunks).join
-  [message, size, key, score_english(message)]
-end
-
-def base64_repeating_key_xor_decode(file)
-  repeating_key_xor_decode(
-    Base64.strict_decode64(
-      File.readlines(file).map { |line| line.chomp }.join
-    )
-  )
+  key = chunks.map { |c| c[1] }.join
+  message = strings_transpose(chunks.map { |c| c[0] }).join
+  [message, key]
 end
 
 def base64_rkx_decode(file)
