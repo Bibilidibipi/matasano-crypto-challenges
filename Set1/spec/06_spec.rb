@@ -51,7 +51,7 @@ describe "keysize" do
   end
 end
 
-describe "strings transpose" do
+describe "strings_transpose" do
   it "transposes example" do
     a = ["hnr", "nle", "nrb", "zzz"]
     t = ["hnnz", "nlrz", "rebz"]
