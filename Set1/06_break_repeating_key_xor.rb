@@ -14,7 +14,7 @@ def get_chunks(str, length, partials)
   chunks = []
   i = 0
   until i >= str.length
-    chunks << str[i...(i + length)] unless !partials && i >= str.length - length
+    chunks << str[i...(i + length)] unless !partials && i > str.length - length
     i += length
   end
 
