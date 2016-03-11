@@ -1,6 +1,6 @@
 require_relative "../Set1/07_aes_in_ecb_mode.rb"
 
-class UserService
+class UserService1
   def initialize
     @key = rand_key
     @uid = 0
@@ -54,8 +54,8 @@ class UserService
   end
 end
 
-def create_admin
-  us = UserService.new
+def create_admin1
+  us = UserService1.new
   pre_code = us.create_ciphertext("me@myselfi.org")[0..31]
   admin_code = us.create_ciphertext("hackerswinadmin\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b")[16..31]
 

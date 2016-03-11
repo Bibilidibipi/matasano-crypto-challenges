@@ -1,5 +1,5 @@
 # takes a cipher that prepends your own plaintext to the message before encryption
-class BreakECB
+class BreakECB1
   ENG_ORDER = 
     [32] + 
     (97..122).to_a + 
