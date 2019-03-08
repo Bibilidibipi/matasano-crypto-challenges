@@ -1,4 +1,5 @@
-require_relative "./02_fixed_xor"
+require_relative "../Shared/hex"
+require_relative "../Shared/ascii"
 
 ENGLISH_FREQUENCIES = {
   'a' => 8.167,
@@ -44,15 +45,12 @@ end
 
 # returns [message, key, score]
 def hex_decode_xor_ascii_full(hex)
+  ascii = Ascii.new(Hex.new(hex).to_ascii)
+
   (0..255).to_a.map do |i|
     a = i.chr
-    ascii = hex_a_xor_ascii(hex, a)
-    [ascii, a, score_english(ascii)]
+    xor = ascii.xor_char(a).ascii
+
+    [xor, a, score_english(xor)]
   end.max_by{ |a| a[2] }
 end
-
-# def get_single_decodings(hex)
-#   Hash[(1..255).to_a.map do |i|
-#     [i, xor_score_english(hex, i)]
-#   end].sort_by{ |k, v| v }.map{ |k, v| int_fixed_xor_binary(hex, k) }[-4..-1]
-# end

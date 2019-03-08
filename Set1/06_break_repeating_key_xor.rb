@@ -59,7 +59,7 @@ end
 def rkx_decode(code)
   chunks = strings_transpose(get_chunks(code, keysize(code), true))
   chunks.map! do |chunk|
-    hex_decode_xor_ascii_full(ascii_to_hex(chunk))
+    hex_decode_xor_ascii_full(Ascii.new(chunk).to_hex)
   end
   key = chunks.map { |c| c[1] }.join
   message = strings_transpose(chunks.map { |c| c[0] }).join

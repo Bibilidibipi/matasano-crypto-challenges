@@ -1,14 +1,14 @@
-require_relative "./02_fixed_xor"
+require_relative "../Shared/ascii"
+require_relative "../Shared/hex"
 
 # ascii to hex
 def vigenere_encrypt_hex(message, key)
-  i = -1
-  message.chars.map do |c|
-    a_xor_hex(c, key[i = (i + 1) % key.length])
-  end.join
+  Ascii.new(vigenere_encrypt(message, key)).to_hex
 end
 
 # ascii to ascii
 def vigenere_encrypt(message, key)
-  hex_to_ascii(vigenere_encrypt_hex(message, key))
+  message.each_char.with_index.map do |c, i|
+    Ascii.new(c).xor(key[i % key.length]).ascii
+  end.join
 end
