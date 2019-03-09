@@ -59,7 +59,7 @@ end
 def rkx_decode(code)
   chunks = strings_transpose(get_chunks(code, keysize(code), true))
   chunks.map! do |chunk|
-    XorCipher.new(chunk)
+    Ciphers::Xor.new(chunk)
   end
   key = chunks.map { |c| c.key }.join
   message = strings_transpose(chunks.map { |c| c.message }).join
