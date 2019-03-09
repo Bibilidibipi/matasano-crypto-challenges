@@ -1,25 +1,17 @@
-require_relative "../03_single_byte_xor_cipher"
+require_relative "../../Shared/xor_cipher"
 
-describe "score_english" do
-  it "normalizes on length" do
-    ascii = "hello"
+describe "problem 3" do
+  it "finds key" do
+    cipher = Hex.new("1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736").to_ascii
+    key = "X"
 
-    expect(score_english(ascii * 2)).to eq score_english(ascii)
+    expect(XorCipher.new(cipher).key).to eq key
   end
 
-  it "discounts non-english characters" do
-    ascii1 = "'\r\\\e"
-    ascii2 = "hello"
+  it "deciphers message" do
+    cipher = Hex.new("1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736").to_ascii
+    message = "Cooking MC's like a pound of bacon"
 
-    expect(score_english(ascii1)).to be < score_english(ascii2)
-  end
-end
-
-describe "hex_decode_xor_ascii" do
-  it "decodes example" do
-    hex = "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736"
-    ascii = "Cooking MC's like a pound of bacon"
-
-    expect(hex_decode_xor_ascii(hex)).to eq(ascii)
+    expect(XorCipher.new(cipher).message).to eq message
   end
 end

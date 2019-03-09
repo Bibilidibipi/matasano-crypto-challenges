@@ -1,14 +1,20 @@
 require "base64"
 
 class Ascii
-  attr_reader :ascii
+  attr_reader :ascii, :to_hex, :score
+
+  class << self
+    def all_chars
+      (0..255).map { |i| i.chr }
+    end
+  end
 
   def initialize(ascii)
     @ascii = ascii
   end
 
   def to_hex
-    ascii.chars.map do |c|
+    @to_hex ||= ascii.chars.map do |c|
       c.ord.to_s(16).rjust(2, '0')
     end.join
   end

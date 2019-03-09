@@ -1,19 +1,19 @@
-require_relative "ascii.rb"
+require_relative "ascii"
 require "base64"
 
 class Hex
-  attr_reader :hex
+  attr_reader :hex, :to_ascii, :to_base64
 
   def initialize(hex)
     @hex = hex
   end
 
   def to_ascii
-    [hex].pack('H*')
+    @to_ascii ||= [hex].pack('H*')
   end
 
   def to_base64
-    Base64.strict_encode64(to_ascii)
+    @to_base64 ||= Base64.strict_encode64(to_ascii)
   end
 
   def xor(hex2)

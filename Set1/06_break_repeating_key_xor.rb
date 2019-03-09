@@ -1,4 +1,4 @@
-require_relative "./03_single_byte_xor_cipher"
+require_relative "../Shared/english"
 
 def normalized_hamming_distance(s1, s2)
   raise "must compare strings of equal length" if s1.length != s2.length
@@ -59,10 +59,10 @@ end
 def rkx_decode(code)
   chunks = strings_transpose(get_chunks(code, keysize(code), true))
   chunks.map! do |chunk|
-    hex_decode_xor_ascii_full(Ascii.new(chunk).to_hex)
+    XorCipher.new(chunk)
   end
-  key = chunks.map { |c| c[1] }.join
-  message = strings_transpose(chunks.map { |c| c[0] }).join
+  key = chunks.map { |c| c.key }.join
+  message = strings_transpose(chunks.map { |c| c.message }).join
   [message, key]
 end
 
