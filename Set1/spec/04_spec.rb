@@ -1,10 +1,10 @@
 require_relative "../04_detect_single_character_xor"
 
-describe "detect_single_byte_xor" do
-  it "decodes example" do
+describe "problem 4" do
+  it "deciphers example" do
     file_path = File.expand_path("../txt/04_test_code.txt", File.dirname(__FILE__))
-    ascii = "Now that the party is jumping\n"
+    plain_text = "Now that the party is jumping\n"
 
-    expect(detect_single_byte_xor(file_path)).to eq(ascii)
+    expect(detect_single_byte_xor(file_path)).to eq plain_text
   end
 end

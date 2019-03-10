@@ -1,7 +1,7 @@
 require "base64"
 
 class Ascii
-  attr_reader :ascii, :to_hex, :score
+  attr_reader :ascii
 
   class << self
     def all_chars

@@ -6,7 +6,7 @@ def normalized_hamming_distance(s1, s2)
   s1.chars.zip(s2.chars).each do |a|
     d += (a[0].ord ^ a[1].ord).to_s(2).count('1')
   end
-  
+
   d.fdiv(s1.length)
 end
 
@@ -36,8 +36,8 @@ def keysize(code)
     end * (2.fdiv(chunks.length))
 
     if d < dis - 1 || 
-     (d < dis && s % size != 0) || 
-     (d < dis && size == 2)
+        (d < dis && s % size != 0) || 
+        (d < dis && size == 2)
       dis = d
       size = s
     end
@@ -59,11 +59,11 @@ end
 def rkx_decode(code)
   chunks = strings_transpose(get_chunks(code, keysize(code), true))
   chunks.map! do |chunk|
-    Ciphers::Xor.new(chunk)
+    Ciphers::SingleCharXor.new(cipher_text: chunk)
   end
   key = chunks.map { |c| c.key }.join
-  message = strings_transpose(chunks.map { |c| c.message }).join
-  [message, key]
+  plain_text = strings_transpose(chunks.map { |c| c.plain_text}).join
+  [plain_text, key]
 end
 
 def base64_rkx_decode(file)

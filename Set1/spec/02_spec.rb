@@ -1,6 +1,6 @@
-require_relative "../../Shared/hex.rb"
+require_relative "../../Shared/hex"
 
-describe "problem 1" do
+describe "problem 2" do
   it "xors example" do
     hex = Hex.new("1c0111001f010100061a024b53535009181c")
     hex_string = "686974207468652062756c6c277320657965"

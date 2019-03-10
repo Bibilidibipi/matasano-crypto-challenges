@@ -1,4 +1,4 @@
-require_relative "../../Shared/hex.rb"
+require_relative "../../Shared/hex"
 
 describe "problem 1" do
   it "converts example" do
