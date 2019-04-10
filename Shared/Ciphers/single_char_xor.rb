@@ -1,5 +1,6 @@
 require_relative "../ascii"
 require_relative "../ciphers"
+require_relative "../english"
 
 module Ciphers
   class SingleCharXor
@@ -8,11 +9,11 @@ module Ciphers
     attr_reader :cipher_text
 
     def plain_text
-      @plain_text ||= decipher[0]
+      @plain_text ||= decipher[:plain_text]
     end
 
     def key
-      @key ||= decipher[1]
+      @key ||= decipher[:key]
     end
 
 
@@ -22,8 +23,8 @@ module Ciphers
       @decipher ||= Ascii.all_chars.map { |c|
         xor = Ascii.new(cipher_text).xor_char(c).ascii
 
-        [xor, c]
-      }.max_by{ |a| English.score(a[0]) }
+        { plain_text: xor, key: c }
+      }.max_by{ |h| English.score(h[:plain_text])}
     end
   end
 end

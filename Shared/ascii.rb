@@ -19,10 +19,10 @@ class Ascii
     end.join
   end
 
-  def xor(ascii2)
-    raise "length must match" unless ascii.length == ascii2.length
+  def xor(ascii_2)
+    validate_matching_length(ascii_2)
 
-    xor = ascii.chars.zip(ascii2.chars).map do |a|
+    xor = ascii.chars.zip(ascii_2.chars).map do |a|
       (a[0].ord ^ a[1].ord).chr
     end.join
 
@@ -35,5 +35,24 @@ class Ascii
     }.join
 
     self.class.new(xor)
+  end
+
+  def split_chunks(length:, partials: nil)
+    ascii.scan(Regexp.new("[\\s\\S]{#{'1,' if partials}#{length}}"))
+  end
+
+  def normalized_hamming_distance(ascii_2)
+    validate_matching_length(ascii_2)
+
+    distance = 0
+    ascii.chars.zip(ascii_2.chars).each do |a|
+      distance += (a[0].ord ^ a[1].ord).to_s(2).count('1')
+    end
+
+    distance.fdiv(ascii.length)
+  end
+
+  def validate_matching_length(ascii_2)
+    raise "must compare strings of equal length" unless ascii.length == ascii_2.length
   end
 end
