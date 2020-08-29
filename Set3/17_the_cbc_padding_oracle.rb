@@ -32,7 +32,7 @@ class UserService3
     message = ""
   
     chunks.each do |c|
-      m = ascii_xor(aes_128_ecb_decrypt(c, key, true), test_iv)
+      m = Ascii.new(aes_128_ecb_decrypt(c, key, true)).xor(test_iv).ascii
       message += m
       test_iv = c
     end
@@ -53,8 +53,8 @@ class IncorrectPrevChar < StandardError; end
 def get_char(prev_block, block, message, i, us, repeat)
   iv = prev_block.chars.reverse
   test_block = prev_block.dup
-  test_block[14] = ascii_xor(test_block[14], 32.chr) if repeat
-  test_block[(16 - i)..-1] = ascii_xor(prev_block[(16 - i)..-1], ascii_xor(message, (i + 1).chr * i))
+  test_block[14] = Ascii.new(32.chr).xor(test_block[14]).ascii if repeat
+  test_block[(16 - i)..-1] = Ascii.new(message).xor((i + 1).chr * i).xor(prev_block[(16 - i)..-1]).ascii
 
   255.downto(0).each do |j|
     test_block[15 - i] = j.chr

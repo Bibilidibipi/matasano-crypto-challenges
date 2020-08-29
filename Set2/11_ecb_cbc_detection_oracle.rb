@@ -23,6 +23,6 @@ end
 
 def ecb?(code)
   code = Base64.strict_decode64(code)
-  chunks = get_chunks(code, 16, false)
+  chunks = Ascii.new(code).split_chunks(length: 16, partials: false)
   chunks.uniq.length != chunks.length
 end

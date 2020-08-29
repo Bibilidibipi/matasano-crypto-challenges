@@ -72,8 +72,8 @@ end
 def create_admin2
   us = UserService2.new
   code = us.create_ciphertext("hack")
-  xor = ascii_xor("0like%20a%20", ";admin=true;")
-  code[32...44] = ascii_xor(code[32...44], xor)
+  xor = Ascii.new("0like%20a%20").xor(";admin=true;").ascii
+  code[32...44] = Ascii.new(code[32...44]).xor(xor).ascii
   
   us.parse_ciphertext(code)
 end

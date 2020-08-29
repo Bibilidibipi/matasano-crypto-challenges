@@ -1,5 +1,6 @@
 require_relative "../ascii"
 require_relative "../ciphers"
+require_relative "../Ciphers/single_char_xor"
 
 module Ciphers
   class RepeatingKeyXor
@@ -21,20 +22,28 @@ module Ciphers
       @key ||= decipher[:key]
     end
 
+    def decipher(cipher_blocks: nil)
+      return @decipher if @decipher
+
+      cipher_blocks ||= blocks
+      cipher_blocks_ciphers = cipher_blocks.map do |block|
+        Ciphers::SingleCharXor.new(cipher_text: block)
+      end
+      decipher_key = cipher_blocks_ciphers.map { |block| block.key }.join
+      plain_text = strings_transpose(cipher_blocks_ciphers.map(&:plain_text)).join
+
+      @decipher = { plain_text: plain_text, key: decipher_key }
+    end
+
 
     private
 
-    def decipher
-      return @decipher if @decipher
+    attr_writer :blocks
 
-      blocks = strings_transpose(Ascii.new(cipher_text).split_chunks(length: keysize, partials: true))
-      blocks.map! do |block|
-        Ciphers::SingleCharXor.new(cipher_text: block)
-      end
-      key = blocks.map { |block| block.key }.join
-      plain_text = strings_transpose(blocks.map { |block| block.plain_text}).join
+    def blocks
+      return @blocks if @blocks
 
-      @decipher = { plain_text: plain_text, key: key }
+      self.blocks = strings_transpose(Ascii.new(cipher_text).split_chunks(length: keysize, partials: true))
     end
 
     def keysize
@@ -73,10 +82,9 @@ module Ciphers
       chars_array = array.map { |string|
         string.chars
       }
+      max_length = chars_array.max_by(&:length).length
 
-      chars_array[0].zip(*chars_array[1..-1]).map { |chars|
-        chars.join
-      }
+      ([nil] * max_length).zip(*chars_array).map(&:compact).map(&:join)
     end
   end
 end

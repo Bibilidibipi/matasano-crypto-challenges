@@ -14,7 +14,7 @@ module Ciphers
   end
 
   def initialize(cipher_text: nil, key: nil, plain_text: nil)
-    raise "must be initialized with cipher_text or plain_text, not both" unless !!cipher_text ^ !!plain_text
+    raise "must not be initialized with both cipher_text and plain_text" if !!cipher_text && !!plain_text
 
     @cipher_text = cipher_text if cipher_text
     @key = key if key

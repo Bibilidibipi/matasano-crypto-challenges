@@ -23,7 +23,6 @@ class BreakECB2
     message_extra = 0
 
     loop do
-      found = false
       pre_pend = "B" + "A" * block_size + "B" * (block_size - message_extra - 1)
       add = ((pre_pend + message).length - 1) / block_size
       char_chunk, last = get_test_chunk(pre_pend, add)
@@ -31,13 +30,11 @@ class BreakECB2
       ENG_ORDER.each do |ord|
         test_chr = ord.chr
         test_chunk = get_test_chunk(pre_pend + message + test_chr, add)[0]
-        test_chunk
         if test_chunk == char_chunk
-          test_chr
           message += test_chr
           message_extra = (message_extra + 1) % block_size
 
-          return unpad(message) if ord == 1 && last
+          return unpad(message) if last
           break
         end
       end

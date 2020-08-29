@@ -1,12 +1,12 @@
-require_relative "../Set1/06_break_repeating_key_xor"
+require_relative "../Shared/Ciphers/repeating_key_xor"
 require_relative "../Set1/07_aes_in_ecb_mode"
 require_relative "./09_implement_pkcs#7_padding"
 
 def cbc_encrypt(message, key, iv)
-  chunks = get_chunks(pkcs7_pad(message, 16), 16, false)
+  chunks = Ascii.new(pkcs7_pad(message, 16)).split_chunks(length: 16, partials: false)
   code = ""
   chunks.each do |c|
-    iv = aes_128_ecb_encrypt(ascii_xor(c, iv), key, true)
+    iv = aes_128_ecb_encrypt(Ascii.new(c).xor(iv).ascii, key, true)
     code += iv
   end
   
@@ -14,12 +14,12 @@ def cbc_encrypt(message, key, iv)
 end
 
 def cbc_decrypt(code, key, iv)
-  chunks = get_chunks(code, 16, false)
+  chunks = Ascii.new(code).split_chunks(length: 16, partials: false)
   message = ""
 
   chunks.each do |c|
-    m = ascii_xor(aes_128_ecb_decrypt(c, key, true), iv)
-    message += m
+    m = Ascii.new(aes_128_ecb_decrypt(c, key, true)).xor(iv)
+    message += m.ascii
     iv = c
   end
 
